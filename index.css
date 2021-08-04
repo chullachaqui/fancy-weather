@@ -1,0 +1,71 @@
+body {
+    margin: 0px;
+}
+
+.dashboard {
+    display: flex;
+    /* background-color: rgb(160, 116, 35); */
+}
+
+.button {    
+    margin-right: 10px;
+}
+
+.main {
+    display: flex;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    /* background-color: rgb(236, 184, 13); */
+    width: auto;
+    height: auto;
+}
+
+.weather {
+    display: flex;
+}
+
+.temperature-today {
+    display: flex;
+    /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
+    font-weight: bold;
+    font-size: 50px;
+}
+
+.today-overview {
+    display: flex;
+    flex-direction: column;
+    line-height: 3px;
+    /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
+}
+
+.languageSelection {
+    
+}
+
+.none {
+}
+
+.closed-list{
+    position: relative;
+    max-height: 1rem;
+    /* height:auto; */
+
+    overflow: hidden;
+}
+
+.open-list {
+    overflow: visible;
+}
+
+.material-icons-outlined {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;  /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+}
