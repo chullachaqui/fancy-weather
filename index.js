@@ -101,7 +101,7 @@ class WeatherApp {
                 this.map.language = 'en';
                 localStorage.setItem('language', 'en');
                 this.dashboard.translateDashboard();
-                this.dashboard.changeLanguage.chosen.innerHTML = this.language;
+                this.dashboard.changeLanguage.chosen.innerHTML = 'ENG';
                 this.map.displayCoordinates(this.latitude, this.longitude);
                 this.getLocationBasedWeather(`${this.latitude},${this.longitude}`);
             }
@@ -115,7 +115,7 @@ class WeatherApp {
                 this.map.language = 'pl';
                 localStorage.setItem('language', 'pl');                
                 this.dashboard.translateDashboard();
-                this.dashboard.changeLanguage.chosen.innerHTML = this.language;
+                this.dashboard.changeLanguage.chosen.innerHTML = 'PL';
                 this.map.displayCoordinates(this.latitude, this.longitude);
                 this.getLocationBasedWeather(`${this.latitude},${this.longitude}`);
             }
@@ -135,11 +135,11 @@ class Dashboard {
 
         this.changeLanguage = new HTMLelement('div', this.container, 'closed-list');
         this.changeLanguage.chosen = new HTMLelement('div', this.changeLanguage, 'languageSelection');
-        this.changeLanguage.chosen.innerHTML = this.language;
+        this.changeLanguage.chosen.innerHTML = 'ENG';
         this.changeLanguage.choice1 = new HTMLelement('div', this.changeLanguage, 'languageSelection');
-        this.changeLanguage.choice1.innerHTML = 'en';
+        this.changeLanguage.choice1.innerHTML = 'ENG';
         this.changeLanguage.choice2 = new HTMLelement('div', this.changeLanguage, 'languageSelection');
-        this.changeLanguage.choice2.innerHTML = 'pl';
+        this.changeLanguage.choice2.innerHTML = 'PL';
  
         this.celsius = new HTMLelement('div', this.container, 'button');
         this.celsius.innerHTML = '\xB0C';
