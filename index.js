@@ -61,9 +61,11 @@ class WeatherApp {
         const error = () => console.log('cannot retrieve the device\'s location');
         if (navigator.geolocation){
             navigator.geolocation.getCurrentPosition((position) => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;  
-                this.getLocationBasedWeather(`${latitude},${longitude}`);
+                if (position.coords) {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;  
+                    this.getLocationBasedWeather(`${latitude},${longitude}`); 
+                }                
             }, error, {
                 enableHighAccuracy: true,
               });
@@ -77,9 +79,8 @@ class WeatherApp {
         .then((data) => {
             this.latitude = data.results[0].geometry.lat;
             this.longitude = data.results[0].geometry.lng;
-            this.getBackground();
+            // this.getBackground();
 
-                        
             this.map.centerPosition(this.latitude, this.longitude);
             this.map.displayCoordinates(this.latitude, this.longitude);
             this.dashboard.translateDashboard();
