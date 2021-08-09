@@ -20,6 +20,7 @@ class WeatherApp {
         this.map.language = this.language;
         this.weather.units = localStorage.getItem('units') || 'celsius';
         
+        this.getBackground();
         this.searchListeners();
         this.unitChangeListeners();
         this.languageListeners();
@@ -62,6 +63,7 @@ class WeatherApp {
         if (navigator.geolocation){
             navigator.geolocation.getCurrentPosition((position) => {
                 if (position.coords) {
+                    console.log(position.coords);
                     const latitude = position.coords.latitude;
                     const longitude = position.coords.longitude;  
                     this.getLocationBasedWeather(`${latitude},${longitude}`); 
@@ -80,7 +82,7 @@ class WeatherApp {
             this.latitude = data.results[0].geometry.lat;
             this.longitude = data.results[0].geometry.lng;
             // this.getBackground();
-
+            
             this.map.centerPosition(this.latitude, this.longitude);
             this.map.displayCoordinates(this.latitude, this.longitude);
             this.dashboard.translateDashboard();
@@ -136,6 +138,7 @@ class WeatherApp {
     languageListeners() {
         this.dashboard.changeLanguage.addEventListener('click', () => {
             this.dashboard.changeLanguage.classList.toggle('open-list');
+            this.dashboard.changeLanguage.classList.toggle('closed-list');
         })
 
         this.dashboard.changeLanguage.choice1.addEventListener('click', () => {
@@ -147,8 +150,10 @@ class WeatherApp {
                 localStorage.setItem('language', 'en');
                 this.dashboard.translateDashboard();
                 this.dashboard.changeLanguage.chosen.innerHTML = 'ENG';
-                this.map.displayCoordinates(this.latitude, this.longitude);
-                this.getLocationBasedWeather(`${this.latitude},${this.longitude}`);
+                if (this.weather.location.innerHTML) {
+                    this.map.displayCoordinates(this.latitude, this.longitude);
+                    this.getLocationBasedWeather(`${this.latitude},${this.longitude}`);
+                }
             }
         });
 
@@ -161,8 +166,10 @@ class WeatherApp {
                 localStorage.setItem('language', 'pl');                
                 this.dashboard.translateDashboard();
                 this.dashboard.changeLanguage.chosen.innerHTML = 'PL';
-                this.map.displayCoordinates(this.latitude, this.longitude);
-                this.getLocationBasedWeather(`${this.latitude},${this.longitude}`);
+                if (this.weather.location.innerHTML) {
+                    this.map.displayCoordinates(this.latitude, this.longitude);
+                    this.getLocationBasedWeather(`${this.latitude},${this.longitude}`);
+                }
             }
         });
     }
@@ -170,10 +177,16 @@ class WeatherApp {
     backgroundListeners() {
         const button = this.dashboard.changeBackground;
         button.addEventListener('click', (event) => {
+            this.dashboard.changeBackground.button.classList.add('rotation');
             console.log(event);
             this.getBackground();
+            setTimeout(() => {
+            this.dashboard.changeBackground.button.classList.remove('rotation');                
+            }, 1500);
         })
+
     }
 }
 
 export const omena = new WeatherApp();
+window.omena = omena;
