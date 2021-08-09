@@ -2,13 +2,13 @@ import { HTMLelement } from './HTMLelement.js';
 
 export class Weather {
     constructor () {
-        this.units = 'celsius' || localStorage.getItem('units');
+        this.units = localStorage.getItem('units') || 'celsius';
         this.main = document.querySelector('.main');
         
         //today's weather:
         const weather = new HTMLelement('section', this.main, 'weather');
 
-        const current = new HTMLelement('div', weather, 'location&time');
+        const current = new HTMLelement('div', weather);
 
         this.location = new HTMLelement('p', current, 'location');
         this.time = new HTMLelement('p', current, 'time');
@@ -57,26 +57,17 @@ export class Weather {
         .then((response) => response.json())
         .then((data) => {
             this.displayWeather(data);
+            // setInterval(() => {
+            //     this.displayWeather(data);
+            // }, 2000);
         })
-
-        // ===================
-        // different API - weatherapi.com
-        // const date = new Date();
-        // fetch(`https://api.weatherapi.com/v1/current.json?key=dc369d1b5f5b46e9b4312034211707&q=${latitude},${longitude}&lang=${this.language}`)
-        // .then((response => response.json()))
-        // .then((data) => {
-        //     console.log(data);
-        //     // this.displayWeather(data);
-        // })
     }      
     
 
     displayWeather(weatherData) {
-
         //current weather and time:
         const language = this.language === 'en' ? `${this.language}-GB` : 'pl';
-        const units = localStorage.getItem('units');
-
+        
         const timezone = weatherData.timezone;
         const time = new Date();
         const convertedTime = time.toLocaleString(language, {'weekday': 'short', 'month': 'long', 'day': 'numeric', 'hour': '2-digit', 'minute': '2-digit', 'timeZone': `${timezone}`}).replaceAll(',','');
@@ -84,9 +75,9 @@ export class Weather {
         this.time.innerHTML = `${convertedTime}`;
         this.description.innerHTML = `${weatherData.current.weather[0].description}`;
 
-        this.temperature.value = units === 'celsius' ? `${Math.round(weatherData.current.temp)}\xB0C` : `${Math.round(9 / 5 * weatherData.current.temp + 32)}\xB0F`;
+        this.temperature.value = this.units === 'celsius' ? `${Math.round(weatherData.current.temp)}\xB0C` : `${Math.round(9 / 5 * weatherData.current.temp + 32)}\xB0F`;
         this.temperature.innerHTML = this.temperature.value;
-        this.feelsLike.value = units === 'celsius' ? `${Math.round(weatherData.current.feels_like)}\xB0C` : `${Math.round(9 / 5 * weatherData.current.feels_like + 32)}\xB0F`;
+        this.feelsLike.value = this.units === 'celsius' ? `${Math.round(weatherData.current.feels_like)}\xB0C` : `${Math.round(9 / 5 * weatherData.current.feels_like + 32)}\xB0F`;
 
         this.icon.setAttribute('src', `http://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`);
 
@@ -103,7 +94,7 @@ export class Weather {
 
             this[`day${i}`]['weekday'].innerHTML = now.toLocaleString(language, {'weekday': 'long'});
             this[`day${i}`]['icon'].setAttribute('src', `http://openweathermap.org/img/wn/${weatherData.daily[i].weather[0].icon}@2x.png`);
-            this[`day${i}`]['temperature'].innerHTML = units === 'celsius' ? `${Math.round(weatherData.daily[i].temp.min + weatherData.daily[i].temp.max)/2}\xB0C` : `${Math.round(9 / 5 *(weatherData.daily[i].temp.min + weatherData.daily[i].temp.max)/2 + 32)}\xB0F`;
+            this[`day${i}`]['temperature'].innerHTML = this.units === 'celsius' ? `${Math.round(weatherData.daily[i].temp.min + weatherData.daily[i].temp.max)/2}\xB0C` : `${Math.round(9 / 5 *(weatherData.daily[i].temp.min + weatherData.daily[i].temp.max)/2 + 32)}\xB0F`;
         }
     }
 }

@@ -3,7 +3,7 @@ import { HTMLelement } from './HTMLelement.js';
 import { Weather } from './Weather.js';
 import { WeatherMap } from './WeatherMap.js';
 import { Speech } from './Speech.js';
-
+import { rounder } from './functions.js';
 
 class WeatherApp {
     constructor () {
@@ -19,6 +19,9 @@ class WeatherApp {
         this.weather.language = this.language;
         this.map.language = this.language;
         this.weather.units = localStorage.getItem('units') || 'celsius';
+
+        this.previousLat = '';
+        this.previousLng = '';
         
         this.getBackground();
         this.searchListeners();
@@ -34,21 +37,6 @@ class WeatherApp {
     }
 
     getBackground() {
-        // fetch(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=bd26977b2f064d0d84133023c5cac316&tags=weather,${this.weather.description.innerHTML}&tag_mode=all&accuracy=11&extras=url_h,url_l&geo_context=2&format=json&nojsoncallback=1`)
-        // // .then(response => console.log(response))
-        // .then(response => response.json())
-        // .then(object => {
-        //     console.log(object);
-        //     const randomIndex = Math.floor(Math.random() * 100);
-        //     console.log(randomIndex);
-
-        //     const randomPhoto = object.photos.photo[randomIndex];
-        //     const url = randomPhoto.url_l ? randomPhoto.url_l : randomPhoto.url_h
-        //     // if (!url) { url = `${}` }
-        //     // const url = `https://live.staticflickr.com/${randomPhoto.server}/${randomPhoto.id}_${randomPhoto.secret}_b.jpg`
-        //     document.body.setAttribute('style', `background-image: url(${url});`);
-        // })
-
         fetch(`https://api.unsplash.com/photos/random?&client_id=L0JtEhlUZnLRnHtLs5d8-BZBPQNp-Pejvs5PKObs7eE&orientation=landscape&per_page=1&query=sky,weather,${this.weather.description}`)
         .then(response => response.json())
         .then(data => {
@@ -63,11 +51,10 @@ class WeatherApp {
         if (navigator.geolocation){
             navigator.geolocation.getCurrentPosition((position) => {
                 if (position.coords) {
-                    console.log(position.coords);
                     const latitude = position.coords.latitude;
                     const longitude = position.coords.longitude;  
-                    this.getLocationBasedWeather(`${latitude},${longitude}`); 
-                }                
+                    this.getLocationBasedWeather(`${latitude},${longitude}`);
+                }
             }, error, {
                 enableHighAccuracy: true,
               });
@@ -75,26 +62,34 @@ class WeatherApp {
     }
 
     getLocationBasedWeather(location) {
-        // tutaj po searchu podajesz co wpisano w searchBar, ponizszy kod go przemienia na lat i long, które później podajesz do getweather
         fetch(`https://api.opencagedata.com/geocode/v1/json?q=${location}&key=d1e4f3c55f444cfa82590e0c3d733a98&limit=1&language=${this.language}`)
         .then((response) => response.json())
         .then((data) => {
             this.latitude = data.results[0].geometry.lat;
             this.longitude = data.results[0].geometry.lng;
-            // this.getBackground();
             
-            this.map.centerPosition(this.latitude, this.longitude);
             this.map.displayCoordinates(this.latitude, this.longitude);
             this.dashboard.translateDashboard();
-
+            
             let displayedLocation;
             if (data.results[0].components.city) { displayedLocation = data.results[0].components.city; } else
             if (data.results[0].components.town) { displayedLocation = data.results[0].components.town; } else
             if (data.results[0].components.administrative) { displayedLocation = data.results[0].components.administrative; } else
             if (data.results[0].components.village) { displayedLocation = data.results[0].components.village; } else
             if (data.results[0].components.region) { displayedLocation = data.results[0].components.region; }
+            
+            
+
+            //check if the map needs to be reloaded:
+            if (rounder(this.previousLat) !== rounder(this.latitude) && rounder(this.previousLng) !== rounder(this.longitude)) {
+                this.map.centerPosition(this.latitude, this.longitude);
+            }
 
             this.weather.location.innerHTML = displayedLocation ? `${displayedLocation}, ${data.results[0].components.country}` : `${data.results[0].components.country}`;
+            
+            this.previousLat = this.latitude;
+            this.previousLong = this.longitude;
+
             this.weather.getWeather(this.latitude, this.longitude);
         })
         .catch(() => {
@@ -103,7 +98,6 @@ class WeatherApp {
     }
 
     searchListeners() {
-        // listeners created in separate function and defined by arrow functions, which allows to preserve THIS referring to the WeatherApp class instance
         this.dashboard.searchButton.addEventListener('click', () => {
             this.getLocationBasedWeather(this.dashboard.searchBar.value);
             this.dashboard.searchBar.value = '';
@@ -118,8 +112,8 @@ class WeatherApp {
 
     unitChangeListeners() {
         this.dashboard.celsius.addEventListener('click', () => {
-            // this.weather.units = 'celsius';
             localStorage.setItem('units', 'celsius');
+            this.weather.units = 'celsius';
             this.weather.getWeather(this.latitude, this.longitude);
             this.dashboard.celsius.classList.add('active-button');
             this.dashboard.fahrenheit.classList.remove('active-button');
@@ -127,8 +121,8 @@ class WeatherApp {
         });
 
         this.dashboard.fahrenheit.addEventListener('click', () => {
-            // this.weather.units = 'fahrenheit';
             localStorage.setItem('units', 'fahrenheit');
+            this.weather.units = 'fahrenheit';
             this.weather.getWeather(this.latitude, this.longitude);
             this.dashboard.fahrenheit.classList.add('active-button');
             this.dashboard.celsius.classList.remove('active-button');
@@ -176,15 +170,13 @@ class WeatherApp {
 
     backgroundListeners() {
         const button = this.dashboard.changeBackground;
-        button.addEventListener('click', (event) => {
+        button.addEventListener('click', () => {
             this.dashboard.changeBackground.button.classList.add('rotation');
-            console.log(event);
             this.getBackground();
             setTimeout(() => {
             this.dashboard.changeBackground.button.classList.remove('rotation');                
             }, 1500);
         })
-
     }
 }
 

@@ -40,9 +40,7 @@ export class Dashboard {
 
         const value = this.language === 'en' ? 'Search' : 'Szukaj';
         this.searchButton = new HTMLelement('input', searchArea, 'searchButton', { 'type': 'button', 'value': value });
-    }
-
-    
+    }    
     
     translateDashboard() {
         const placeholder = this.language === 'en' ? 'Search city or location' : 'Znajdź miasto lub miejsce';
